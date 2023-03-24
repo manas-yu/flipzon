@@ -10,7 +10,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => Products(),
+      //*don't use .value when instantiating a class
+      create: (ctx) => Products(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'MyShop',

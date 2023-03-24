@@ -20,8 +20,9 @@ class ProductsGrid extends StatelessWidget {
         crossAxisSpacing: 10,
       ),
       itemBuilder: (ctx, i) {
-        return ChangeNotifierProvider(
-          create: (context) => products[i],
+        return ChangeNotifierProvider.value(
+          //*here we use existing value therefore use .value..... it is also good for .builder list/grids
+          value: products[i],
           child: ProductItem(
               // id: products[i].id,
               // title: products[i].title,
