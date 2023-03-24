@@ -10,7 +10,7 @@ class ProductsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context);
-    final products = productsData.item;
+    final products = productsData.items;
     return GridView.builder(
       padding: EdgeInsets.all(10),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -20,10 +20,14 @@ class ProductsGrid extends StatelessWidget {
         crossAxisSpacing: 10,
       ),
       itemBuilder: (ctx, i) {
-        return ProductItem(
-          id: products[i].id,
-          title: products[i].title,
-          imageUrl: products[i].imageUrl,
+        return ChangeNotifierProvider(
+          create: (context) => products[i],
+          child: ProductItem(
+              // id: products[i].id,
+              // title: products[i].title,
+              // imageUrl: products[i].imageUrl,
+
+              ),
         );
       },
       itemCount: products.length,
