@@ -11,23 +11,30 @@ enum FilterOptions {
   all,
 }
 
-class ProductOverviewScreen extends StatelessWidget {
+class ProductOverviewScreen extends StatefulWidget {
   ProductOverviewScreen({Key key}) : super(key: key);
 
   @override
+  State<ProductOverviewScreen> createState() => _ProductOverviewScreenState();
+}
+
+class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
+  var favoritesOnly = false;
+  @override
   Widget build(BuildContext context) {
-    final productData = Provider.of<Products>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Flipzon'),
         actions: [
           PopupMenuButton(
             onSelected: (FilterOptions selectedValue) {
-              if (selectedValue == FilterOptions.favorites) {
-                productData.showFavorites();
-              } else {
-                productData.showAll();
-              }
+              setState(() {
+                if (selectedValue == FilterOptions.favorites) {
+                  favoritesOnly = true;
+                } else {
+                  favoritesOnly = false;
+                }
+              });
             },
             itemBuilder: (context) {
               return [
@@ -45,7 +52,7 @@ class ProductOverviewScreen extends StatelessWidget {
           )
         ],
       ),
-      body: ProductsGrid(),
+      body: ProductsGrid(favoritesOnly),
     );
   }
 }
