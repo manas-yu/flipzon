@@ -15,6 +15,7 @@ class CartItem {
 
 class Cart with ChangeNotifier {
   Map<String, CartItem> _items = {};
+  //*we do this so that form outside the class we can't edit the main _items list
   Map<String, CartItem> get items {
     return {..._items};
   }
@@ -30,6 +31,7 @@ class Cart with ChangeNotifier {
     });
     return total;
   }
+//* in providers classes methods use the private objects to edit like _items
 
   void addItem(String productId, String title, double price) {
     if (_items.containsKey(productId)) {
@@ -58,6 +60,11 @@ class Cart with ChangeNotifier {
 
   void removeItem(String productId) {
     _items.remove(productId);
+    notifyListeners();
+  }
+
+  void clearCart() {
+    _items = {};
     notifyListeners();
   }
 }
