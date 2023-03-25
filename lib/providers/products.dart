@@ -65,8 +65,4 @@ class Products with ChangeNotifier {
       (prod) => id == prod.id,
     );
   }
-
-  void addProduct() {
-    notifyListeners();
-  }
 }
