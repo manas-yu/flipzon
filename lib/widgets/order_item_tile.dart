@@ -12,9 +12,9 @@ class OrderItemTile extends StatefulWidget {
 }
 
 class _OrderItemTileState extends State<OrderItemTile> {
+  var _isExpanded = false;
   @override
   Widget build(BuildContext context) {
-    var isExpanded = false;
     return Card(
       child: Column(
         children: [
@@ -24,43 +24,47 @@ class _OrderItemTileState extends State<OrderItemTile> {
               DateFormat('dd/MM/yyyy hh:mm').format(widget.order.dateTime),
             ),
             trailing: IconButton(
-                onPressed: () {
-                  setState(() {
-                    isExpanded = !isExpanded;
-                  });
-                },
-                icon: Icon(Icons.expand_more)),
+              onPressed: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                  print(_isExpanded);
+                });
+              },
+              icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
+            ),
           ),
-          if (isExpanded)
+          if (_isExpanded == true)
             Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
               height: min(widget.order.orderedProducts.length * 20.0 + 10, 100),
               child: ListView(
-                children: widget.order.orderedProducts
-                    .map(
-                      (prod) => Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            prod.title,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                children: [
+                  ...widget.order.orderedProducts
+                      .map(
+                        (prod) => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              prod.title,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          Text(
-                            '${prod.quantity}x \$${prod.price}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
+                            Text(
+                              '${prod.quantity}x \$${prod.price}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey,
+                              ),
                             ),
-                          )
-                        ],
-                      ),
-                    )
-                    .toList(),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ],
               ),
-            ),
+            )
         ],
       ),
     );
