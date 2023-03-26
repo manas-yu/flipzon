@@ -12,6 +12,7 @@ class OrderItemTile extends StatefulWidget {
 }
 
 class _OrderItemTileState extends State<OrderItemTile> {
+  //don't initialize in build class as it will keep assigning it false value when set state is triggered
   var _isExpanded = false;
   @override
   Widget build(BuildContext context) {
