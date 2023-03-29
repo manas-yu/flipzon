@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+
 import 'package:flutter_complete_guide/screens/orders_screen.dart';
-import 'package:flutter_complete_guide/screens/product_overview_screen.dart';
 import 'package:flutter_complete_guide/screens/user_product_screen.dart';
 
 class AppDrawer extends StatelessWidget {
