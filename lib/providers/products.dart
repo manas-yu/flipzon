@@ -1,7 +1,10 @@
 // ignore_for_file: missing_required_param
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../providers/product.dart';
+import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -76,6 +79,18 @@ class Products with ChangeNotifier {
     );
     _items.add(newProduct);
     notifyListeners();
+    final url = Uri.parse(
+        'https://flutter-update-4def7-default-rtdb.firebaseio.com/product.json');
+    http.post(
+      url,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'price': product.price,
+        'isFav': product.isFavorite,
+        'imageUrl': product.imageUrl,
+      }),
+    );
   }
 
   void updateProduct(String id, Product newProduct) {
