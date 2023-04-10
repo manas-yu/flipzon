@@ -1,6 +1,7 @@
 // ignore_for_file: missing_required_param
 
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/providers/products.dart';
 import 'package:flutter_complete_guide/screens/cart_screen.dart';
 import 'package:flutter_complete_guide/widgets/app_drawer.dart';
 
@@ -24,6 +25,34 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   var favoritesOnly = false;
+  var isInit = true;
+  var isLoading = false;
+  //! don't use async for init and didChange
+  @override
+  void initState() {
+    //! Provider.of<Products>(context).fetchProducts(); CAN'T USE OF CONTEXT
+    //* Future.delayed(Duration.zero).then((_) => Provider.of<Products>(context).fetchProducts());   [WORK AROUND]
+    super.initState();
+  }
+
+  //*runs multiple times while initState runs only once
+  @override
+  void didChangeDependencies() {
+    if (isInit) {
+      setState(() {
+        isLoading = true;
+      });
+      Provider.of<Products>(context).fetchProducts().then((_) {
+        setState(() {
+          isLoading = false;
+        });
+      });
+    }
+
+    isInit = false; //didChange only runs once due to this
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +100,11 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(favoritesOnly),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(favoritesOnly),
     );
   }
 }
