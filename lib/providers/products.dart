@@ -66,18 +66,10 @@ class Products with ChangeNotifier {
   }
 
   void addProduct(Product product) {
-    final newProduct = Product(
-      description: product.description,
-      id: DateTime.now().toString(),
-      price: product.price,
-      title: product.title,
-      imageUrl: product.imageUrl,
-    );
-    _items.add(newProduct);
-    notifyListeners();
     final url = Uri.parse(
         'https://flutter-update-4def7-default-rtdb.firebaseio.com/product.json');
-    http.post(
+    http
+        .post(
       url,
       body: json.encode({
         'title': product.title,
@@ -86,7 +78,19 @@ class Products with ChangeNotifier {
         'isFav': product.isFavorite,
         'imageUrl': product.imageUrl,
       }),
-    );
+    )
+        .then((response) {
+      print(json.decode(response.body));
+      final newProduct = Product(
+        description: product.description,
+        id: json.decode(response.body)['name'],
+        price: product.price,
+        title: product.title,
+        imageUrl: product.imageUrl,
+      );
+      _items.add(newProduct);
+      notifyListeners();
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
