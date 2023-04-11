@@ -1,6 +1,7 @@
 // ignore_for_file: missing_required_param
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import '../providers/product.dart';
@@ -105,8 +106,24 @@ class Products with ChangeNotifier {
     }
   }
 
-  void removeProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+  Future<void> removeProduct(String id) async {
+    // _items.removeWhere((prod) => prod.id == id);
+    final url = Uri.parse(
+        'https://flutter-update-4def7-default-rtdb.firebaseio.com/product/$id.json');
+    final existingProductIndex = _items.indexWhere(
+      (prod) => prod.id == id,
+    );
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    final response = await http.delete(url);
+    print(response.statusCode);
+    //* http package only sends error for get and post while for others we make our own errors (if status code>=400 then there is an error)
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete product');
+    }
+    existingProduct = null;
   }
 }
