@@ -5,10 +5,31 @@ import 'package:flutter_complete_guide/widgets/app_drawer.dart';
 import 'package:flutter_complete_guide/widgets/order_item_tile.dart';
 import 'package:provider/provider.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
   const OrdersScreen({Key key}) : super(key: key);
 
   static const String routeName = '/orders-screen';
+
+  @override
+  State<OrdersScreen> createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  var isLoading = false;
+  @override
+  void initState() {
+    Future.delayed(Duration.zero).then((_) async {
+      setState(() {
+        isLoading = true;
+      });
+      //no need of future delayed if we are using listen false
+      await Provider.of<Orders>(context, listen: false).fetchOrders();
+      setState(() {
+        isLoading = false;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +39,8 @@ class OrdersScreen extends StatelessWidget {
         title: Text('Your Orders'),
       ),
       drawer: AppDrawer(),
-      body: orderData.orders.length == 0
-          ? Center(
-              child: Text(
-                'No Orders Placed!',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-              ),
-            )
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: orderData.orders.length,
               itemBuilder: (context, index) {
