@@ -5,10 +5,26 @@ import 'package:flutter_complete_guide/widgets/app_drawer.dart';
 import 'package:flutter_complete_guide/widgets/order_item_tile.dart';
 import 'package:provider/provider.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
   const OrdersScreen({Key key}) : super(key: key);
 
   static const String routeName = '/orders-screen';
+
+  @override
+  State<OrdersScreen> createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  Future ordersFuture;
+  Future obtainOrdersFuture() {
+    return Provider.of<Orders>(context, listen: false).fetchOrders();
+  }
+
+  @override
+  void initState() {
+    ordersFuture = obtainOrdersFuture();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +35,7 @@ class OrdersScreen extends StatelessWidget {
         ),
         drawer: AppDrawer(),
         body: FutureBuilder(
-          future: Provider.of<Orders>(context, listen: false).fetchOrders(),
+          future: ordersFuture,
           builder: (ctx, dataSnapShot) {
             if (dataSnapShot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
