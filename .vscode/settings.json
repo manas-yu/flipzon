@@ -23,7 +23,8 @@
         "cupertino",
         "Favs",
         "Flipzon",
-        "Lato"
+        "Lato",
+        "Signup"
     ],
     "cmake.sourceDirectory": "${workspaceFolder}/windows/flutter"
 }
