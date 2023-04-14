@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -104,29 +105,64 @@ class _AuthCardState extends State<AuthCard> {
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
+  void showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('An error occurred'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState.validate()) {
-      // Invalid!
-      return;
+    try {
+      if (!_formKey.currentState.validate()) {
+        // Invalid!
+        return;
+      }
+      _formKey.currentState.save();
+      setState(() {
+        _isLoading = true;
+      });
+      if (_authMode == AuthMode.Login) {
+        // Log user in
+        await Provider.of<Auth>(context, listen: false).logIn(
+          _authData['email'],
+          _authData['password'],
+        );
+      } else {
+        // Sign user up
+        await Provider.of<Auth>(context, listen: false).signUp(
+          _authData['email'],
+          _authData['password'],
+        );
+      }
+    } on HttpException catch (error) {
+      var errorMessage = 'Authentication failed';
+      if (error.toString().contains('EMAIL_EXISTS')) {
+        errorMessage = 'Email already in use';
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errorMessage = 'Enter valid email';
+      } else if (error.toString().contains('INVALID_PASSWORD')) {
+        errorMessage = 'Invalid password';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'No user with this email found';
+      }
+      showErrorDialog(errorMessage);
+    } catch (error) {
+      var errorMessage = 'Authentication failed try again';
+      showErrorDialog(errorMessage);
     }
-    _formKey.currentState.save();
-    setState(() {
-      _isLoading = true;
-    });
-    if (_authMode == AuthMode.Login) {
-      // Log user in
-      await Provider.of<Auth>(context, listen: false).logIn(
-        _authData['email'],
-        _authData['password'],
-      );
-    } else {
-      // Sign user up
-      await Provider.of<Auth>(context, listen: false).signUp(
-        _authData['email'],
-        _authData['password'],
-      );
-    }
+
     setState(() {
       _isLoading = false;
     });
