@@ -22,11 +22,16 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (ctx) => Auth(),
           ),
-          ChangeNotifierProvider(
-            //*don't use .value when instantiating a class
-            create: (ctx) => Products(),
+          // ChangeNotifierProvider(
+          //   create: (ctx) => Products(),
+          // ),
+          // ignore: missing_required_param
+          ChangeNotifierProxyProvider<Auth, Products>(
+            update: (context, auth, previousProducts) => Products(auth.token,
+                previousProducts == null ? [] : previousProducts.items),
           ),
           ChangeNotifierProvider(
+            //*don't use .value when instantiating a class
             create: (ctx) => Cart(),
           ),
           ChangeNotifierProvider(
