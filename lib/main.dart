@@ -34,8 +34,13 @@ class MyApp extends StatelessWidget {
             //*don't use .value when instantiating a class
             create: (ctx) => Cart(),
           ),
-          ChangeNotifierProvider(
-            create: (ctx) => Orders(),
+          // ChangeNotifierProvider(
+          //   create: (ctx) => Orders(),
+          // )
+          // ignore: missing_required_param
+          ChangeNotifierProxyProvider<Auth, Orders>(
+            update: (ctx, auth, previousOrders) => Orders(auth.token,
+                previousOrders == null ? [] : previousOrders.orders),
           )
         ],
         child: Consumer<Auth>(

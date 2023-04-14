@@ -19,13 +19,13 @@ class Product with ChangeNotifier {
     @required this.title,
     @required this.imageUrl,
   });
-  Future<void> toggleFavorites() async {
+  Future<void> toggleFavorites(String token) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     try {
       final url = Uri.parse(
-          'https://flutter-update-4def7-default-rtdb.firebaseio.com/product/$id.json');
+          'https://flutter-update-4def7-default-rtdb.firebaseio.com/product/$id.json?auth=$token');
       final response =
           await http.patch(url, body: json.encode({'isFav': isFavorite}));
       if (response.statusCode >= 400) {
