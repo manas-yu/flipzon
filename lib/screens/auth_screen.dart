@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -57,7 +59,7 @@ class AuthScreen extends StatelessWidget {
                         ],
                       ),
                       child: Text(
-                        'MyShop',
+                        'Flipzon',
                         style: TextStyle(
                           color: Theme.of(context)
                               .accentTextTheme
@@ -103,7 +105,7 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
       // Invalid!
       return;
@@ -114,8 +116,16 @@ class _AuthCardState extends State<AuthCard> {
     });
     if (_authMode == AuthMode.Login) {
       // Log user in
+      await Provider.of<Auth>(context, listen: false).logIn(
+        _authData['email'],
+        _authData['password'],
+      );
     } else {
       // Sign user up
+      await Provider.of<Auth>(context, listen: false).signUp(
+        _authData['email'],
+        _authData['password'],
+      );
     }
     setState(() {
       _isLoading = false;
@@ -202,19 +212,20 @@ class _AuthCardState extends State<AuthCard> {
                 else
                   ElevatedButton(
                     style: ButtonStyle(
-                        shape: MaterialStatePropertyAll(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
+                      shape: MaterialStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
                         ),
-                        padding: MaterialStatePropertyAll(
-                          EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                        ),
-                        backgroundColor: MaterialStatePropertyAll(
-                            Theme.of(context).colorScheme.primary),
-                        foregroundColor: MaterialStatePropertyAll(
-                          Theme.of(context).primaryTextTheme.labelLarge.color,
-                        )),
+                      ),
+                      padding: MaterialStatePropertyAll(
+                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+                      ),
+                      backgroundColor: MaterialStatePropertyAll(
+                          Theme.of(context).colorScheme.primary),
+                      foregroundColor: MaterialStatePropertyAll(
+                        Theme.of(context).primaryTextTheme.labelLarge.color,
+                      ),
+                    ),
                     child:
                         Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
                     onPressed: _submit,
