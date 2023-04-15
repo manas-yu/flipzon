@@ -9,7 +9,8 @@ import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   final String authToken;
-  Products(this.authToken, this._items);
+  final String userId;
+  Products(this.authToken, this.userId, this._items);
   List<Product> _items = [
     //dummy default data
   ];
@@ -37,9 +38,11 @@ class Products with ChangeNotifier {
     );
   }
 
-  Future<void> fetchProducts() async {
-    final url = Uri.parse(
-        'https://flutter-update-4def7-default-rtdb.firebaseio.com/product.json?auth=$authToken');
+  Future<void> fetchProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    var url = Uri.parse(
+        'https://flutter-update-4def7-default-rtdb.firebaseio.com/product.json?auth=$authToken&$filterString');
     //tryCatch not needed
     try {
       final response = await http.get(url);
@@ -49,6 +52,10 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+      url = Uri.parse(
+          'https://flutter-update-4def7-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken');
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           description: prodData['description'],
@@ -56,6 +63,8 @@ class Products with ChangeNotifier {
           price: prodData['price'],
           title: prodData['title'],
           imageUrl: prodData['imageUrl'],
+          isFavorite:
+              favoriteData == null ? false : favoriteData[prodId] ?? false,
         ));
       });
       _items = loadedProducts;
@@ -75,8 +84,8 @@ class Products with ChangeNotifier {
         'title': product.title,
         'description': product.description,
         'price': product.price,
-        'isFav': product.isFavorite,
         'imageUrl': product.imageUrl,
+        'creatorId': userId,
       }),
     );
 

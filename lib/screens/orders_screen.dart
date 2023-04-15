@@ -46,13 +46,23 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 );
               } else {
                 return Consumer<Orders>(
-                  builder: (context, orderData, child) {
-                    return ListView.builder(
-                      itemCount: orderData.orders.length,
-                      itemBuilder: (context, index) {
-                        return OrderItemTile(orderData.orders[index]);
-                      },
-                    );
+                  builder: (context, orderData, _) {
+                    return orderData.orders.length == null
+                        ? Center(
+                            child: Text(
+                              'No orders placed!',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 70,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: orderData.orders.length,
+                            itemBuilder: (context, index) {
+                              return OrderItemTile(orderData.orders[index]);
+                            },
+                          );
                   },
                 );
               }
