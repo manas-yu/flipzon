@@ -56,7 +56,18 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
                   .copyWith(secondary: Colors.deepOrange),
             ),
-            home: auth.isAuth ? ProductOverviewScreen() : AuthScreen(), // '/'
+            home: auth.isAuth
+                ? ProductOverviewScreen()
+                : FutureBuilder(
+                    builder: (context, authResultSnapshot) =>
+                        authResultSnapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? Center(
+                                child: Text('loading.......'),
+                              )
+                            : AuthScreen(),
+                    future: auth.tryAutoLogin(),
+                  ), // '/'
             routes: {
               ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
               CartScreen.routeName: (ctx) => CartScreen(),

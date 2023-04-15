@@ -24,6 +24,7 @@
         "Favs",
         "Flipzon",
         "Lato",
+        "prefs",
         "Signup"
     ],
     "cmake.sourceDirectory": "${workspaceFolder}/windows/flutter"
