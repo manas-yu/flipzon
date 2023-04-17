@@ -88,7 +88,7 @@ class AuthScreen extends StatelessWidget {
 }
 
 class AuthCard extends StatefulWidget {
-  const AuthCard({
+  AuthCard({
     Key key,
   }) : super(key: key);
 
@@ -96,7 +96,23 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Animation<Size> heightAnimation;
+  @override
+  void initState() {
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    heightAnimation = Tween(
+            begin: Size(double.infinity, 260), end: Size(double.infinity, 320))
+        .animate(controller);
+    controller.addListener(() {
+      setState(() {});
+    });
+    super.initState();
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
@@ -173,10 +189,12 @@ class _AuthCardState extends State<AuthCard> {
       setState(() {
         _authMode = AuthMode.Signup;
       });
+      controller.forward();
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
+      controller.reverse();
     }
   }
 
@@ -189,9 +207,8 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 8.0,
       child: Container(
-        height: _authMode == AuthMode.Signup ? 320 : 260,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+        height: heightAnimation.value.height,
+        constraints: BoxConstraints(minHeight: heightAnimation.value.height),
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16.0),
         child: Form(
