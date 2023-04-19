@@ -16,28 +16,36 @@ class _OrderItemTileState extends State<OrderItemTile> {
   var _isExpanded = false;
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: [
-          ListTile(
-            title: Text('₹${widget.order.amount.toStringAsFixed(2)}'),
-            subtitle: Text(
-              DateFormat('dd/MM/yyyy hh:mm').format(widget.order.dateTime),
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      height: _isExpanded
+          ? min(widget.order.orderedProducts.length * 20.0 + 110, 200)
+          : 80,
+      child: Card(
+        child: Column(
+          children: [
+            ListTile(
+              title: Text('₹${widget.order.amount.toStringAsFixed(2)}'),
+              subtitle: Text(
+                DateFormat('dd/MM/yyyy hh:mm').format(widget.order.dateTime),
+              ),
+              trailing: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _isExpanded = !_isExpanded;
+                    print(_isExpanded);
+                  });
+                },
+                icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
+              ),
             ),
-            trailing: IconButton(
-              onPressed: () {
-                setState(() {
-                  _isExpanded = !_isExpanded;
-                  print(_isExpanded);
-                });
-              },
-              icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
-            ),
-          ),
-          if (_isExpanded == true)
-            Container(
+            // if (_isExpanded == true)
+            AnimatedContainer(
+              duration: Duration(milliseconds: 300),
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-              height: min(widget.order.orderedProducts.length * 20.0 + 10, 100),
+              height: _isExpanded
+                  ? min(widget.order.orderedProducts.length * 20.0 + 10, 100)
+                  : 0,
               child: ListView(
                 children: [
                   ...widget.order.orderedProducts
@@ -66,7 +74,8 @@ class _OrderItemTileState extends State<OrderItemTile> {
                 ],
               ),
             )
-        ],
+          ],
+        ),
       ),
     );
   }
