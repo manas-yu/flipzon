@@ -99,13 +99,19 @@ class AuthCard extends StatefulWidget {
 class _AuthCardState extends State<AuthCard>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
-  Animation<Size> heightAnimation;
+  // Animation<Size> heightAnimation;
+  Animation<double> opacityAnimation;
+  Animation<Offset> slideAnimation;
   @override
   void initState() {
     controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    heightAnimation = Tween(
-            begin: Size(double.infinity, 260), end: Size(double.infinity, 320))
+    // heightAnimation = Tween(
+    //         begin: Size(double.infinity, 260), end: Size(double.infinity, 320))
+    //     .animate(controller);
+    opacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn));
+    slideAnimation = Tween<Offset>(begin: Offset(0, -1.5), end: Offset(0, 0))
         .animate(controller);
     // controller.addListener(() {
     //   setState(() {});
@@ -212,18 +218,14 @@ class _AuthCardState extends State<AuthCard>
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: AnimatedBuilder(
-        animation: heightAnimation,
-        builder: (ctx, ch) {
-          return Container(
-              // height: _authMode == AuthMode.signup ? 320 : 260,
-              height: heightAnimation.value.height,
-              constraints:
-                  BoxConstraints(minHeight: heightAnimation.value.height),
-              width: deviceSize.width * 0.75,
-              padding: EdgeInsets.all(16.0),
-              child: ch);
-        },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        height: _authMode == AuthMode.Signup ? 320 : 260,
+        // height: heightAnimation.value.height,
+        constraints:
+            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+        width: deviceSize.width * 0.75,
+        padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -256,20 +258,33 @@ class _AuthCardState extends State<AuthCard>
                     _authData['password'] = value;
                   },
                 ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.Signup
-                        // ignore: missing_return
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
-                          }
-                        : null,
+                AnimatedContainer(
+                  curve: Curves.easeIn,
+                  duration: Duration(milliseconds: 300),
+                  constraints: BoxConstraints(
+                      minHeight: AuthMode.Signup == _authMode ? 60 : 0,
+                      maxHeight: AuthMode.Signup == _authMode ? 120 : 0),
+                  child: FadeTransition(
+                    opacity: opacityAnimation,
+                    child: SlideTransition(
+                      position: slideAnimation,
+                      child: TextFormField(
+                        enabled: _authMode == AuthMode.Signup,
+                        decoration:
+                            InputDecoration(labelText: 'Confirm Password'),
+                        obscureText: true,
+                        validator: _authMode == AuthMode.Signup
+                            // ignore: missing_return
+                            ? (value) {
+                                if (value != _passwordController.text) {
+                                  return 'Passwords do not match!';
+                                }
+                              }
+                            : null,
+                      ),
+                    ),
                   ),
+                ),
                 SizedBox(
                   height: 20,
                 ),
